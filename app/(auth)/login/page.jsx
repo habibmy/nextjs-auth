@@ -1,14 +1,24 @@
 'use client'
 
-import { useState } from "react"
-import {signIn} from "next-auth/react"
+import { useEffect, useState } from "react"
+import {signIn, useSession} from "next-auth/react"
+import { toast } from "react-hot-toast"
+import { useRouter } from "next/navigation"
 
 export default function Login(){
+    const session = useSession()
+    const router = useRouter()
+    
     const [data, setData] = useState({
         email: "",
         password: ""
     }
     )
+
+    useEffect(() => {
+        if(session?.status === 'authenticated'){
+            router.push('/dashboard')
+        }})
 
      const loginUser = async (e) => {
                 e.preventDefault()
@@ -17,11 +27,11 @@ export default function Login(){
                 })
                 .then((callback) => {
                     if (callback?.error) {
-                        alert(callback.error)
+                        toast.error(callback.error)
                     }
 
                     if(callback?.ok && !callback?.error) {
-                        alert('Logged in successfully!')
+                        toast.success('Logged in successfully!')
                     }
                 } )
             }
